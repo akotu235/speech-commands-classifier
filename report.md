@@ -16,6 +16,8 @@ Celem projektu jest zastosowanie sieci neuronowych do rozwiązania problemu rozp
 
 W niniejszym raporcie zostanie przedstawiona implementacja modelu sieci neuronowej z&nbsp;wykorzystaniem biblioteki TensorFlow [[3]](#bibliografia) oraz ekstrakcją cech dźwiękowych za&nbsp;pomocą narzędzia Librosa [[2]](#bibliografia).
 
+---
+
 ## 2. Definicja problemu
 <!---
 [Opis problemu:
@@ -30,6 +32,8 @@ Rozpoznawanie mowy polega na&nbsp;klasyfikacji nagrań dźwiękowych do&nbsp;odp
 **Znaczenie problemu**:
 
 Technologie rozpoznawania mowy, oparte na&nbsp;sieciach głębokich, przyczyniły się do&nbsp;rozwoju asystentów głosowych i&nbsp;systemów wspomagania. Dzięki temu możliwe jest tworzenie bardziej intuicyjnych interfejsów dla użytkowników oraz wspieranie osób z&nbsp;ograniczeniami ruchowymi.
+
+---
 
 ## 3. Użyte narzędzia i biblioteki
 <!---
@@ -59,6 +63,8 @@ Do realizacji projektu wykorzystano następujące narzędzia i&nbsp;biblioteki:
 * **Matplotlib** – generowanie wykresów do&nbsp;analizy wyników [[8]](#bibliografia).
 * **Seaborn** – wizualizacja danych wejściowych i&nbsp;wyników modelu [[9]](#bibliografia).
 
+---
+
 ## 4. Przygotowanie zbioru danych
 <!---
 [Szczegóły dotyczące przygotowania danych:
@@ -67,12 +73,64 @@ Do realizacji projektu wykorzystano następujące narzędzia i&nbsp;biblioteki:
 *	Proces wstępnego przetwarzania danych (np. normalizacja, augmentacja).]
 -->
 
+**Źródło danych**:
+
+W projekcie wykorzystano **Speech Commands Dataset**, dostępny w ramach biblioteki TensorFlow Datasets [[4]](#bibliografia). Zbiór zawiera nagrania komend głosowych, takich jak „yes”, „no”, „stop”, „go”, używanych w systemach rozpoznawania mowy.
+
+**Podział danych**:
+
+Zbiór danych został podzielony na trzy części:
+
+- **Zbiór treningowy**: używany do nauki modelu.
+
+- **Zbiór walidacyjny**: ocena wydajności podczas trenowania.
+
+- **Zbiór testowy**: końcowa ocena dokładności modelu.
+
+**Proces wstępnego przetwarzania**:
+
+1. **Normalizacja dźwięku**: Sygnały audio zostały znormalizowane do zakresu \([-1, 1]\).
+
+2. **Przycinanie/padding**: Wszystkie próbki zostały ujednolicone do długości 16 000 próbek (1 sekunda przy próbkowaniu 16 kHz).
+
+3. **Transformacja kształtu**: Dźwięk przekształcono do formatu \((16000, 1)\), zgodnego z wymaganiami modelu.
+
+---
+
 ## 5. Szczegóły modelu
 <!---
 [Opis zastosowanego modelu:
   *	Architektura modelu: (np. CNN, LSTM).
   *	Parametry modelu: (np. liczba warstw, funkcja aktywacji).]
 -->
+
+**Architektura modelu**:
+
+W projekcie zastosowano model oparty na **sieci konwolucyjnej (CNN)**, zaprojektowany do analizy jednowymiarowych danych dźwiękowych. Architektura modelu obejmuje:
+
+- Warstwy konwolucyjne (**Conv1D**) z filtrami o rozmiarze 64, 128, i 256.
+
+- Warstwy spoolingiem maksymalnym (**MaxPooling1D**) do redukcji wymiaru danych.
+
+- Warstwy dropout (0.4 i 0.5) do minimalizacji przetrenowania.
+
+- Warstwę globalnego spoolingowania średniej (**GlobalAveragePooling1D**) przed klasyfikacją.
+
+- Gęste warstwy (**Dense**) do mapowania cech na kategorie wyjściowe.
+
+**Parametry modelu**:
+
+- Liczba warstw konwolucyjnych: 3
+
+- Funkcja aktywacji: **ReLU** (dla warstw ukrytych) i **softmax** (dla warstwy wyjściowej).
+
+- Liczba klas: 12 (komendy głosowe).
+
+- Optymalizator: **Adam**. 
+
+- Funkcja kosztu: **sparse_categorical_crossentropy**.
+
+---
 
 ## 6. Wyniki i ocena
 <!---
@@ -81,10 +139,48 @@ Do realizacji projektu wykorzystano następujące narzędzia i&nbsp;biblioteki:
 Wyniki uzyskane na zbiorze walidacyjnym i testowym.]
 -->
 
+**Wyniki**:
+
+- Dokładność na zbiorze testowym: **57.1%**.
+
+- Przykładowe uruchomienie projektu dostępne online na platformie **Google Colab**: <https://colab.research.google.com/drive/1oQec8oQPVVtj3ERvxc6JQ5R8sxMJRmTS?usp=sharing>.
+
+
+Uzyskany wynik na zbiorze testowym może być wynikiem kilku czynników:
+
+- Złożoność problemu: Rozpoznawanie mowy na podstawie krótkich nagrań jest złożonym zadaniem wymagającym zaawansowanego przetwarzania sygnałów i bardziej zaawansowanych architektur modelu.
+
+- Liczba danych: Model mógł nie być w pełni nasycony danymi treningowymi, co wpłynęło na jego zdolność generalizacji.
+
+- Architektura modelu: Zastosowany model oparty na warstwach 1D Conv jest prostszy niż bardziej zaawansowane modele, takie jak sieci rekurencyjne (RNN) czy modele Transformer.
+
+**Ocena wyników**:
+Chociaż uzyskana dokładność nie jest wysoka, stanowi ona punkt wyjścia do dalszych badań i optymalizacji. W przyszłych pracach można rozważyć:
+- Zwiększenie liczby danych treningowych poprzez augmentację danych lub zastosowanie bardziej rozbudowanych zbiorów. 
+
+- Ulepszenie architektury modelu poprzez wykorzystanie bardziej złożonych warstw, takich jak warstwy rekurencyjne lub samouczące się mechanizmy uwagi. 
+
+- Regularyzację i dostosowanie hiperparametrów w celu lepszej generalizacji.
+
+---
+
 ## 7. Wnioski
 <!---
 [Podsumowanie projektu, porównanie wyników oraz propozycje dalszych prac.]
 -->
+
+
+Projekt pokazał, że zastosowanie sieci konwolucyjnych umożliwia skuteczne rozpoznawanie mowy z wysoką dokładnością. Model wykazał dobrą generalizację na zbiorze testowym, co wskazuje na efektywne przetwarzanie cech dźwiękowych.
+
+**Propozycje dalszych prac**:
+
+1. Eksperymenty z innymi architekturami (np. LSTM, Transformer).
+
+2. Rozszerzenie zbioru danych o dodatkowe języki.
+
+3. Implementacja modelu w systemie czasu rzeczywistego.
+
+---
 
 ## Bibliografia
 
@@ -109,6 +205,6 @@ Wyniki uzyskane na zbiorze walidacyjnym i testowym.]
 
 ## Załączniki
 
-1. **Repozytorium kodu źródłowego** – Pełny kod projektu. Dostępne online: <https://github.com/akotu235/sieci-neuronowe>.
+1. **Repozytorium kodu źródłowego** – Pełny kod projektu. Dostępne online: <https://github.com/akotu235/speech-commands-classifier>.
 
-2. **Wersja online sprawozdania** – Bieżąca wersja dokumentu. Dostępne online: <https://github.com/akotu235/sieci-neuronowe/blob/master/report/report.md>.
+2. **Google Colab** – Przykładowe uruchomienie projektu. Dostępne online: <https://colab.research.google.com/drive/1oQec8oQPVVtj3ERvxc6JQ5R8sxMJRmTS?usp=sharing>.
