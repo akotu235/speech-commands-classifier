@@ -156,6 +156,7 @@ Uzyskany wynik na zbiorze testowym może być wynikiem kilku czynników:
 
 **Ocena wyników**:
 Chociaż uzyskana dokładność nie jest wysoka, stanowi ona punkt wyjścia do dalszych badań i optymalizacji. W przyszłych pracach można rozważyć:
+
 - Zwiększenie liczby danych treningowych poprzez augmentację danych lub zastosowanie bardziej rozbudowanych zbiorów. 
 
 - Ulepszenie architektury modelu poprzez wykorzystanie bardziej złożonych warstw, takich jak warstwy rekurencyjne lub samouczące się mechanizmy uwagi. 
