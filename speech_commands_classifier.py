@@ -32,19 +32,20 @@ train_data = train_data.map(preprocess).batch(16)
 validation_data = validation_data.map(preprocess).batch(16)
 test_data = test_data.map(preprocess).batch(16)
 
-
 # 3. Definicja modelu
 model = Sequential([
     Input(shape=(16000, 1)),
-    Conv1D(32, 3, activation='relu'),
+    Conv1D(64, 5, activation='relu'),
     MaxPooling1D(2),
-    Dropout(0.3),
-    Conv1D(64, 3, activation='relu'),
+    Dropout(0.4),
+    Conv1D(128, 5, activation='relu'),
     MaxPooling1D(2),
-    Dropout(0.3),
+    Dropout(0.4),
+    Conv1D(256, 3, activation='relu'),
+    MaxPooling1D(2),
     GlobalAveragePooling1D(),
-    Dense(128, activation='relu'),
-    Dropout(0.3),
+    Dense(256, activation='relu'),
+    Dropout(0.5),
     Dense(12, activation='softmax')
 ])
 
