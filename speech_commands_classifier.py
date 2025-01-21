@@ -19,15 +19,13 @@ test_data = data['test']
 
 # 2. Normalizacja danych i przygotowanie do modelu
 def preprocess(audio, label):
-    audio = tf.squeeze(audio)  # Usunięcie zbędnych wymiarów
-    audio = tf.cast(audio, tf.float32) / 32768.0  # Normalizacja amplitudy
-    audio = tf.expand_dims(audio, axis=-1)  # Dodanie wymiaru kanału (dla Conv1D)
-    audio = tf.cond(
-        tf.size(audio) < 16000,
-        lambda: tf.pad(audio, [[0, 16000 - tf.size(audio)], [0, 0]]),
-        lambda: audio[:16000]
-    )
-    audio = tf.ensure_shape(audio, [16000, 1])
+    audio = tf.squeeze(audio)
+    audio = tf.cast(audio, tf.float32) / 32768.0
+    if tf.size(audio) < 16000:
+        audio = tf.pad(audio, [[0, 16000 - tf.size(audio)]])
+    else:
+        audio = audio[:16000]
+    audio = tf.reshape(audio, [16000, 1])
     return audio, label
 
 train_data = train_data.map(preprocess).batch(16)
